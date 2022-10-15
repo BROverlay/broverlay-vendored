@@ -1,0 +1,33 @@
+name: Vendor packages
+
+on:
+  push: 
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  vendoring_it:
+    strategy:
+      matrix:
+        # Package Name | Version | SRC_URI | S #
+        packages: ["duf 0.8.1 https://github.com/muesli/duf/archive/v0.8.1.tar.gz"]
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3.3.0
+        with:
+          architecture: x64
+      - run: go version
+      - name: Run vendoring script
+        run: |
+          export PAU=duf-0.8.1.tar.gz
+          chmod u+x vendoring.sh
+          ./vendoring.sh ${{ matrix.packages }}
+        shell: bash
+        # Unfortunately, we'll need to add the artifacts here manually.
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: duf-v0.8.1.tar.xz
+          path: dep-archives/duf-*
