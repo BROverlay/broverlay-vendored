@@ -29,6 +29,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
+          body: "It's not intended to be a real release, i'm doing releases just because Github doesn't supports anyone downloading workflow artifacts."
           files: |
             dep-archives/*
         
