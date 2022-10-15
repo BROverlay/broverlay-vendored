@@ -2,8 +2,8 @@ name: Vendor packages
 
 on:
   push: 
-    branches: [ "main" ]
-  workflow_dispatch:
+    tags:
+      - "v*.*.*"
 
 jobs:
   vendoring_it:
@@ -21,13 +21,14 @@ jobs:
       - run: go version
       - name: Run vendoring script
         run: |
-          export PAU=duf-0.8.1.tar.gz
           chmod u+x vendoring.sh
           ./vendoring.sh ${{ matrix.packages }}
         shell: bash
         # Unfortunately, we'll need to add the artifacts here manually.
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+      - name: Releasing
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: duf-v0.8.1.tar.xz
-          path: dep-archives/duf-*
+          files: |
+            dep-archives/*
+        
